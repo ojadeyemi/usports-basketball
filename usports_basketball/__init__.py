@@ -2,7 +2,8 @@
 """
 USports Basketball Statistics Web Scraping and Processing Package
 
-This package provides functions for web scraping and processing basketball statistics data from the USports website. It encompasses functionality for retrieving both team and player statistics.
+This package provides functions for web scraping and processing basketball statistics data from the USports website.
+ It encompasses functionality for retrieving both team and player statistics.
 
 Dependencies:
     - requests
@@ -10,11 +11,12 @@ Dependencies:
     - pandas
     
 Functions:
-- usports_team_stats: Fetches and processes team statistics data, including standings, win-loss totals, and other relevant team metrics.
-- usports_player_stats: Fetches and processes player statistics data, including total games played, total points scored, field goal percentage, and other individual player metrics.
+- usports_team_stats:  Retrieves and handles team statistics such as standings, win-loss records, and key team metrics.
+- usports_player_stats:  Retrieves and processes player statistics like points scored, field goal percentage, and other individual player metrics.
 
 These functions return pandas DataFrames containing the respective statistics data.
-Note: This is based on current season only, to get stats from previous season you'll need to manually make changes in both team and players webscraping files
+Note: This is based on current season only.
+For previous season's stats, adjustment to both team and player scraping files are needed.
 
 # Example:
 >>> from usportsbballstats import usports_team_stats, usports_player_stats
@@ -31,4 +33,3 @@ Date Created:
 """
 from .team_stats import usports_team_stats
 from .player_stats import usports_player_stats
-

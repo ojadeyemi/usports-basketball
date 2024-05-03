@@ -1,4 +1,17 @@
-#importing libraries
+"""
+Module for fetching and processing team statistics data from the current U Sports basketball league season.
+
+This module provides functions to retrieve team statistics from the current U Sports basketball league season for both men's and women's leagues.
+ It utilizes web scraping techniques to extract data from the U Sports website and processes it into pandas DataFrames for further analysis.
+
+Functions:
+- __usports_team_data(stats_url: str, standings_url: str, no_of_teams: int) -> pd.DataFrame:
+    Fetches and processes team statistics data from the given URLs and the specified number of teams.
+
+- usports_team_stats(arg:str) -> pd.DataFrame:
+    Fetches and processes team statistics data from the U Sports website based on the specified gender.
+"""
+
 import requests
 from bs4 import BeautifulSoup
 import pandas as pd
@@ -17,9 +30,9 @@ def __usports_team_data(stats_url: str, standings_url: str, no_of_teams: int) ->
         pd.DataFrame: DataFrame containing processed team statistics.
     '''
     #perfrom GET request to the URL and returns the server response to the HTTP request
-    page = requests.get(stats_url)
+    page = requests.get(stats_url, timeout=10)
    
-    if(page.status_code != 200):
+    if page.status_code != 200:
         print("USport's Server did not respond with HTTP request")
 
     #parse html document
@@ -97,8 +110,7 @@ def __usports_team_data(stats_url: str, standings_url: str, no_of_teams: int) ->
         net_efficiency.append(columns[17].text.strip())
 
     #Loop through defensive stats row (skip first row(header) and second row which contains game played)
-    for index, row in enumerate(rows[no_of_teams+2:]):
-        
+    for index, row in enumerate(rows[no_of_teams+2:]):        
         #exit loop when we reached end of table
         if index >= no_of_teams:
             break
@@ -155,7 +167,6 @@ def __usports_team_data(stats_url: str, standings_url: str, no_of_teams: int) ->
         'team_fouls_per_game_against': fouls_per_game_against,
         'points_per_game_against': points_per_game_against
         }
-    
     
     #create dictionary that maps university sports team to respective conference
     team_conference = {
@@ -257,16 +268,17 @@ def __usports_team_data(stats_url: str, standings_url: str, no_of_teams: int) ->
     df['team_fouls_per_game_against'] = df['team_fouls_per_game_against'].astype(float)
     df['points_per_game_against'] = df['points_per_game_against'].astype(float)
     try:
-        df['offensive_efficiency'] = df['offensive_efficiency'].astype(float)
-        df['defensive_efficiency'] = df['defensive_efficiency'].astype(float)
-        df['Net_efficiency'] = df['Net_efficiency'].astype(float)
-    except:
-        print(f"Some team's_efficiency was not recorded")
+        df['offensive_efficiency'] = pd.to_numeric(df['offensive_efficiency'], errors='coerce')
+        df['defensive_efficiency'] = pd.to_numeric(df['defensive_efficiency'], errors='coerce')
+        df['Net_efficiency'] = pd.to_numeric(df['Net_efficiency'], errors='coerce')
+    except ValueError:
+        print("Some team's_efficiency was not recorded")
+
 
     #page from second url
-    page = requests.get(standings_url)
+    page = requests.get(standings_url, timeout=10)
    
-    if(page.status_code != 200):
+    if page.status_code != 200:
         print("USport's Server did not respond with HTTP request")
 
     #parse html document
@@ -340,11 +352,13 @@ def usports_team_stats(arg:str) -> pd.DataFrame:
     Returns:
         pd.DataFrame: DataFrame containing processed team statistics.
     """
-    if(arg.lower() == 'men'):
+    if arg.lower() == 'men':
         team = ('https://universitysport.prestosports.com/sports/mbkb/2023-24/teams?sort=&r=0&pos=off',
              'https://universitysport.prestosports.com/sports/mbkb/2023-24/standings-conf', 52)
-    elif(arg.lower() == 'women'):
+    elif arg.lower() == 'women' :
         team = ('https://universitysport.prestosports.com/sports/wbkb/2023-24/teams?sort=&r=0&pos=off',
                'https://universitysport.prestosports.com/sports/wbkb/2023-24/standings-conf', 48)
+    else:
+        raise ValueError("In correct argument . options are: \'men\' or \'women\'")
     team_stats_df = __usports_team_data(team[0], team[1], team[2])
     return team_stats_df

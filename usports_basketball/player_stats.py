@@ -1,3 +1,26 @@
+"""
+Module for fetching and processing player statistics data from the current U Sports basketball league season.
+
+This module provides functions to retrieve player statistics, including both offense and defense data,
+from the current U Sports basketball league season for both men's and women's leagues. 
+It utilizes web scraping techniques to extract data from the U Sports website 
+and processes it into pandas DataFrames for further analysis.
+
+Functions:
+- __usports_player_offense_data(offense_url:str) -> pd.DataFrame:
+    Fetches and processes player offense statistics data from the given URL.
+
+- __usports_player_defense_data(defense_url:str) -> pd.DataFrame:
+    Fetches and processes player defense statistics data from the given URL.
+
+- usports_player_stats(arg:str) -> pd.DataFrame:
+    Fetches and processes player statistics data from the U Sports website based on the specified gender.
+Author:
+    OJ Adeyemi
+
+Date Created:
+    March 1, 2024
+"""
 import requests
 from bs4 import BeautifulSoup
 import pandas as pd
@@ -12,10 +35,9 @@ def __usports_player_offense_data(offense_url:str) -> pd.DataFrame:
     Returns:
         pd.DataFrame: DataFrame containing processed player offense statistics.
     """ 
-    offense_page = requests.get(offense_url)
+    offense_page = requests.get(offense_url, timeout=10)
 
     # Parse the HTML using BeautifulSoup
-   
     offense_soup = BeautifulSoup(offense_page.content, 'html.parser')
 
     offense_rows = offense_soup.find_all('tr')
@@ -41,8 +63,10 @@ def __usports_player_offense_data(offense_url:str) -> pd.DataFrame:
     for row in offense_rows:
         cols = row.find_all('td')  # Find all <td> tags with class 'text'
         if len(cols) > 0:
-            player_lastname_initials = cols[1].get_text(strip=True).split()[0]  # Assuming lastname initials are the first letter of the second <td> content
-            firstname = ' '.join(cols[1].get_text(strip=True).split()[1:])  # Assuming firstname is the rest of the content after lastname initials
+            # Assuming lastname initials are the first letter of the second <td> content
+            player_lastname_initials = cols[1].get_text(strip=True).split()[0] 
+            # Assuming firstname is the rest of the content after lastname initials
+            firstname = ' '.join(cols[1].get_text(strip=True).split()[1:])  
             school = cols[2].get_text(strip=True)
             minutes_played = cols[5].get_text(strip=True)
             field_goals_made, field_goals_attempted = cols[6].get_text(strip=True).split('-')
@@ -84,10 +108,9 @@ def __usports_player_defense_data(defense_url:str) -> pd.DataFrame:
     Returns:
         pd.DataFrame: DataFrame containing processed player defense statistics.
     """ 
-    defense_page = requests.get(defense_url)
+    defense_page = requests.get(defense_url, timeout=10)
 
     # Parse the HTML using BeautifulSoup
-   
     defense_soup = BeautifulSoup(defense_page.content, 'html.parser')
 
     # Initialize lists to store data
@@ -117,8 +140,10 @@ def __usports_player_defense_data(defense_url:str) -> pd.DataFrame:
     for row in defense_rows:
         cols = row.find_all('td')  # Find all <td> tags with class 'text'
         if len(cols) > 0:
-            player_lastname_initials = cols[1].get_text(strip=True).split()[0]  # Assuming lastname initials are the first letter of the second <td> content
-            firstname = ' '.join(cols[1].get_text(strip=True).split()[1:])  # Assuming firstname is the rest of the content after lastname initials
+            # Assuming lastname initials are the first letter of the second <td> content
+            player_lastname_initials = cols[1].get_text(strip=True).split()[0]
+            # Assuming firstname is the rest of the content after lastname initials  
+            firstname = ' '.join(cols[1].get_text(strip=True).split()[1:]) 
             school = cols[2].get_text(strip=True)
             games_played = cols[3].get_text(strip=True)
             games_started = cols[4].get_text(strip=True)
@@ -170,15 +195,17 @@ def usports_player_stats(arg:str) -> pd.DataFrame:
     Returns:
         pd.DataFrame: DataFrame containing processed player statistics.
     """
-    if(arg == 'men'):
-            players_off_stats_df = __usports_player_offense_data('https://universitysport.prestosports.com/sports/mbkb/2023-24/players?view=&pos=st&r=0')
-            players_def_stats_df = __usports_player_defense_data('https://universitysport.prestosports.com/sports/mbkb/2023-24/players?view=&pos=bt&r=0')
-    elif (arg == 'women'):
+    if arg == 'men':
+        players_off_stats_df = __usports_player_offense_data('https://universitysport.prestosports.com/sports/mbkb/2023-24/players?view=&pos=st&r=0')
+        players_def_stats_df = __usports_player_defense_data('https://universitysport.prestosports.com/sports/mbkb/2023-24/players?view=&pos=bt&r=0')
+    elif arg == 'women':
         players_off_stats_df = __usports_player_offense_data('https://universitysport.prestosports.com/sports/wbkb/2023-24/players?view=&pos=st&r=0')
         players_def_stats_df = __usports_player_defense_data('https://universitysport.prestosports.com/sports/wbkb/2023-24/players?view=&pos=bt&r=0')
+    else:
+        raise ValueError("In correct argument . options are: \'men\' or \'women\'")
 
-    players_stats_df = pd.merge(players_def_stats_df, players_off_stats_df, on=['lastname_initials','first_name','school', 'minutes_played'], how='inner')
-    
+    players_stats_df = pd.merge(players_def_stats_df, players_off_stats_df, 
+                        on=['lastname_initials','first_name','school', 'minutes_played'], how='inner')
     players_stats_df['games_played'] = pd.to_numeric(players_stats_df['games_played'], errors='coerce').fillna(0).astype(int)
     players_stats_df['games_started'] = pd.to_numeric(players_stats_df['games_started'], errors='coerce').fillna(0).astype(int)
     players_stats_df['minutes_played'] = pd.to_numeric(players_stats_df['minutes_played'], errors='coerce').fillna(0).astype(int)
