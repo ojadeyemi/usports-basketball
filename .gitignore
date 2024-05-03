@@ -1,12 +1,15 @@
 
+.vscode/
+.idea/
+
+
+# Python files #
+################
 __pycache__/
 dist/
 build/
-*.egg-info/
-*.env
-.py*
-*.local
-*.pyc
-.vscode/
-.idea/
-.DS_Store
+# Egg metadata
+*.egg-info
+.eggs
+.pypirc
+
