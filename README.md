@@ -2,6 +2,11 @@
 
 **usports-basketball** is a Python package that fetches and analyzes current basketball stats from the [U Sports website](https://usports.ca/en). With two simple functions—one for fetching team stats and the other for player stats—users can easily retrieve detailed data for either the men's or women's league. Each function returns a DataFrame with the relevant statistics statistics, allowing users to gather data for analysis and insights.
 
+
+ > # **NOTE: USPORTS has changed the structure of their website therefore  [usports-basketball](https://github.com/ojadeyemi/usports-basketball "Python package for current usports basketball stats") package will not be able to webscape data. Hopefully I find out how to update it.**
+ 
+
+
 ## Installation
 
 You can install the package via pip:
@@ -98,7 +103,7 @@ top_10_players = oua_players_df.head(10)
 print(top_10_players[['lastname_initials', 'first_name', 'school', 'points_per_game']].to_string(index=False))
 ```
 
-- ### Getting teams who have at least 5 games in a row (Women's League)
+- ### Getting teams who have a winning streak of at least 5 games in a row (Women's League)
 
 ```python
 # Filter the DataFrame to include only teams with a streak of 5+ wins
@@ -127,7 +132,7 @@ men_team_stats_df.to_html('table.html')
 #Export to a JSON file using the to_json() method
 men_team_stats_df.to_json('men_team_stats.json', orient='records') # Export in 'records' format
 
-#Export to a SQL database using the to_sql() method (requires SQLAlchemy)
+#Export to a SQLite database using the to_sql() method (requires SQLAlchemy)
 from sqlalchemy import create_engine
 
 engine = create_engine('sqlite:///usports_stats.db') #Export to SQLite database
@@ -135,7 +140,7 @@ women_team_stats_df.to_sql('team_stats', con=engine, index=False) # Export witho
 women_player_stats_df.to_sql('player_stats', con=engine, index=False) # Export without row index
 ```
 
-## Explore [Pandas DataFrame](https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.html) documentation for instructions on manipulating data and performing data analysis.
+### Explore [Pandas DataFrame](https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.html) documentation for instructions on manipulating data and performing data analysis.
 
 ## Author
 
