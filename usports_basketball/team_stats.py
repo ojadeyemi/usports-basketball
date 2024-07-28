@@ -362,3 +362,6 @@ def usports_team_stats(arg:str) -> pd.DataFrame:
         raise ValueError("In correct argument . options are: \'men\' or \'women\'")
     team_stats_df = __usports_team_data(team[0], team[1], team[2])
     return team_stats_df
+
+
+men_team = usports_team_stats('men')
