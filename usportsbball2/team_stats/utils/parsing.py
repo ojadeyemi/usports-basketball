@@ -1,48 +1,11 @@
-import re
-from typing import Any
 from bs4 import BeautifulSoup
-
-
-def split_made_attempted(value: str) -> tuple[int, int]:
-    try:
-        made, attempted = value.split("-")
-        return int(made), int(attempted)
-    except ValueError as e:
-        raise ValueError(
-            f"Error splitting made and attempted values from '{value}': {e}"
-        )
-
-
-def clean_text(text: str) -> str:
-    # Remove newlines and tabs
-    cleaned_text = re.sub(r"[\n\t]+", " ", text)
-    # Replace multiple spaces with a single space
-    cleaned_text = re.sub(r"\s{2,}", " ", cleaned_text)
-    return cleaned_text.strip()
-
-
-def merge_data(
-    existing_data: list[dict[str, Any]], new_data: list[dict[str, Any]]
-) -> list[dict[str, Any]]:
-    data_dict = {
-        f"{item['team_name']}_{item['games_played']}": item for item in existing_data
-    }
-
-    for new_item in new_data:
-        key = f"{new_item['team_name']}_{new_item['games_played']}"
-        if key in data_dict:
-            data_dict[key].update(new_item)
-        else:
-            data_dict[key] = new_item
-
-    return list(data_dict.values())
+from typing import Any
+from .data_processing import clean_text, split_made_attempted
 
 
 def parse_team_stats_table(soup: BeautifulSoup, table_index: int, columns: list[str]):
     table_data: list[dict[str, Any]] = []
     rows = soup.find_all("tr")
-    print(f"table index = {table_index} and rows len = {len(rows)}\n")
-    team_count = 0
 
     for row in rows:
         cols: list = row.find_all("td")
@@ -68,7 +31,6 @@ def parse_team_stats_table(soup: BeautifulSoup, table_index: int, columns: list[
                     else:
                         row_data[col] = value
             table_data.append(row_data)
-            team_count += 1
 
     return table_data
 
