@@ -1,7 +1,8 @@
 import pandas as pd
+from utils import convert_types
+
 from ..data_fetching import fetch_team_stats
-from ..utils import convert_types
-from ..config.values import team_stats_columns_type_mapping
+from ..settings.team_settings import team_stats_columns_type_mapping
 
 
 async def get_team_stats_df(stats_url: str) -> pd.DataFrame:
@@ -11,9 +12,7 @@ async def get_team_stats_df(stats_url: str) -> pd.DataFrame:
 
     invalid_rows_count = df[df["games_played"] == "-"].shape[0]
     if invalid_rows_count > 0:
-        print(
-            f"\nDropping {invalid_rows_count} rows with invalid 'games_played' values\n"
-        )
+        print(f"\nDropping {invalid_rows_count} rows with invalid 'games_played' values\n")
         df = df[df["games_played"] != "-"]
 
     combined_type_mapping = {

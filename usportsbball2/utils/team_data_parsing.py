@@ -1,6 +1,8 @@
-from bs4 import BeautifulSoup
 from typing import Any
-from .data_processing import clean_text, split_made_attempted
+
+from bs4 import BeautifulSoup
+
+from utils import clean_text, split_made_attempted
 
 
 def parse_team_stats_table(soup: BeautifulSoup, table_index: int, columns: list[str]):
@@ -35,9 +37,7 @@ def parse_team_stats_table(soup: BeautifulSoup, table_index: int, columns: list[
     return table_data
 
 
-def parse_standings_table(
-    soup: BeautifulSoup, columns: list[str]
-) -> list[dict[str, Any]]:
+def parse_standings_table(soup: BeautifulSoup, columns: list[str]) -> list[dict[str, Any]]:
     table_data = []
 
     # Find all rows in the table

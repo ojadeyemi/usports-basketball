@@ -2,7 +2,7 @@
 
 import pandas as pd
 
-from usports_basketball import usports_team_stats, usports_player_stats
+from usports_basketball import usports_player_stats, usports_team_stats
 
 
 def test_usports_team_stats_returns_dataframe():
@@ -83,9 +83,7 @@ def test_usports_team_stats_columns():
 
     actual_columns = team_stats_df.columns.tolist()
     for column in expected_columns:
-        assert (
-            column in actual_columns
-        ), f"Expected column '{column}' not found in team_stats_df"
+        assert column in actual_columns, f"Expected column '{column}' not found in team_stats_df"
 
 
 def test_usports_player_stats_columns():
@@ -98,16 +96,6 @@ def test_usports_player_stats_columns():
         "games_played",
         "games_started",
         "minutes_played",
-        "offensive_rebounds",
-        "defensive_rebounds",
-        "total_rebounds",
-        "personal_fouls",
-        "disqualifications",
-        "assists",
-        "turnovers",
-        "assist_per_turnover",
-        "steals",
-        "blocks",
         "field_goal_made",
         "field_goal_attempted",
         "field_goal_percentage",
@@ -118,9 +106,16 @@ def test_usports_player_stats_columns():
         "free_throws_attempted",
         "free_throws_percentage",
         "total_points",
+        "offensive_rebounds",
+        "defensive_rebounds",
+        "total_rebounds",
+        "assists",
+        "turnovers",
+        "steals",
+        "blocks",
+        "personal_fouls",
+        "disqualifications",
     ]
     actual_columns = player_stats_df.columns.tolist()
     for column in expected_columns:
-        assert (
-            column in actual_columns
-        ), f"Expected column '{column}' not found in player_stats_df"
+        assert column in actual_columns, f"Expected column '{column}' not found in player_stats_df"

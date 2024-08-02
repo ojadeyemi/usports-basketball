@@ -1,8 +1,10 @@
 from typing import Any, List
-from playwright.async_api import async_playwright
+
 from bs4 import BeautifulSoup
-from ..utils import parse_standings_table, merge_data
-from ..config.values import standings_type_mapping
+from playwright.async_api import async_playwright
+from utils import merge_data, parse_standings_table
+
+from ..settings.team_settings import standings_type_mapping
 
 
 async def fetch_standings_data(standings_url: str) -> List[dict[str, Any]]:
@@ -18,19 +20,16 @@ async def fetch_standings_data(standings_url: str) -> List[dict[str, Any]]:
             }
         )
         # Block unnecessary resources
-        await page.route("**/*.{png,jpg,jpeg,gif,webp}", lambda route: route.abort())
-        await page.route("**/*.css", lambda route: route.abort())
-        await page.route("**/*.woff2", lambda route: route.abort())
-        await page.route("**/*.woff", lambda route: route.abort())
+        await page.route(
+            "**/*.{png,jpg,jpeg,gif,webp,css,woff2,woff,js}",
+            lambda route: route.abort(),
+        )
 
         print("Navigating to standings page")
-        await page.goto(
-            standings_url, timeout=30 * 1000, wait_until="networkidle"
-        )  # wait 30 sec
+        await page.goto(standings_url, timeout=30 * 1000, wait_until="networkidle")  # wait 30 sec
         print("standings clicked\n")
-        await page.wait_for_selector(
-            "tbody", timeout=30 * 1000
-        )  # Wait for table body to be present
+
+        await page.wait_for_selector("tbody", timeout=30 * 1000)  # Wait for table body to be present
         tables = await page.query_selector_all("tbody")
 
         tables_length = len(tables)

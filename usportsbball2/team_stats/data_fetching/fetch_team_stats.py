@@ -1,12 +1,13 @@
-from playwright.async_api import async_playwright, Page
 from bs4 import BeautifulSoup
-from ..utils import parse_team_stats_table, merge_data
-from ..config.values import team_stats_columns_type_mapping, stat_group_options
+from playwright.async_api import Page, async_playwright
+from utils import merge_data, parse_team_stats_table
+
+from ..settings.team_settings import stat_group_options, team_stats_columns_type_mapping
 
 
 async def fetch_table_html(page: Page, selector: str, option_value: str, index: int):
-    await page.select_option("#stats-team-secondary-select", option_value, timeout=5000)
-    await page.select_option(selector, "100", timeout=5000)
+    # await page.select_option("#stats-team-secondary-select", option_value, timeout=5000)
+    # await page.select_option(selector, "100", timeout=5000)
 
     tables = await page.query_selector_all("tbody")
 
@@ -15,9 +16,7 @@ async def fetch_table_html(page: Page, selector: str, option_value: str, index: 
         table_html = table_html.replace("\n", "").replace("\t", "")
         return table_html
     else:
-        raise IndexError(
-            f"Table index {index} is out of bounds. Only {len(tables)} tables found."
-        )
+        raise IndexError(f"Table index {index} is out of bounds. Only {len(tables)} tables found.")
 
 
 async def fetch_team_stats(stats_url: str):
@@ -34,15 +33,12 @@ async def fetch_team_stats(stats_url: str):
         )
 
         # Block unnecessary resources to speed up page load
-        await page.route("**/*.{png,jpg,jpeg,gif,webp}", lambda route: route.abort())
-        await page.route("**/*.css", lambda route: route.abort())
-        await page.route("**/*.woff2", lambda route: route.abort())
-        await page.route("**/*.woff", lambda route: route.abort())
+        await page.route("**/*.{png,jpg,jpeg,gif,webp,css,woff2,woff,js}", lambda route: route.abort())
 
         try:
             await page.goto(stats_url, timeout=60 * 1000)
             all_data = []
-            print("Inital team_stats page clicked")
+            print("\nInital team_stats page clicked")
             for index, option in enumerate(stat_group_options):
                 selector = f"#dt-length-{index}"
                 print(f"Clicking on {selector}")

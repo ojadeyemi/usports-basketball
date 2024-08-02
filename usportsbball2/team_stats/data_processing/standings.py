@@ -1,7 +1,8 @@
 import pandas as pd
+from utils import convert_types
+
 from ..data_fetching import fetch_standings_data
-from ..utils import convert_types
-from ..config.values import standings_type_mapping
+from ..settings.team_settings import standings_type_mapping
 
 
 async def get_standings_df(standings_url: str) -> pd.DataFrame:
