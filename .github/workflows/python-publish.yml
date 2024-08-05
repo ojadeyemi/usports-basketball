@@ -18,10 +18,10 @@ jobs:
 
     steps:
       - name: Checkout source
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4.1.7
 
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v5.1.1
         with:
           python-version: "3.x"
 
@@ -62,4 +62,4 @@ jobs:
           path: dist/
 
       - name: Publish package distributions 📦 to PyPI
-        uses: pypa/gh-action-pypi-publish@release/v1
+        uses: pypa/gh-action-pypi-publish@v1.9.0

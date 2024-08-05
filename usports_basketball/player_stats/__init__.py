@@ -46,9 +46,9 @@ def __construct_urls(gender: str, season_option: str) -> str:
     sport = __get_sport_identifier(gender)
     try:
         base_url = SEASON_URLS[season_option]
-    except KeyError:
+    except KeyError as e:
         available_options = ", ".join(SEASON_URLS.keys())
-        raise ValueError(f"Invalid season option {season_option}. Available options: {available_options}")
+        raise ValueError(f"Invalid season option {season_option}. Available options: {available_options}") from e
 
     player_stats_url = f"{BASE_URL}/{sport}/{base_url}/players?pos=sh&r=0&sort={{sort_category}}"
     return player_stats_url
