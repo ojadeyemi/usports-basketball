@@ -1,8 +1,18 @@
+import asyncio
+
 from bs4 import BeautifulSoup
-from playwright.async_api import async_playwright
+from playwright.async_api import Page, async_playwright
 
 from ...utils import fetch_table_html, get_random_header, merge_player_data, parse_player_stats_table
 from ..player_settings import player_stats_columns_type_mapping
+
+
+async def fetch_table_data(page: Page, index: int, columns: dict[str, type]):
+    """Fetch and parse a specific table from the page."""
+    table_html = await fetch_table_html(page, index)
+    soup = BeautifulSoup(table_html, "html.parser")
+    column_names = list(columns.keys())
+    return parse_player_stats_table(soup, column_names)
 
 
 async def fetching_player_stats(url: str):
@@ -18,15 +28,14 @@ async def fetching_player_stats(url: str):
 
         try:
             await page.goto(url, timeout=50000)
-            all_data = []
-            for index in range(0, 3):
-                table_html = await fetch_table_html(page, index + 3)
+            tasks = [fetch_table_data(page, index + 3, player_stats_columns_type_mapping[index]) for index in range(3)]
 
-                soup = BeautifulSoup(table_html, "html.parser")
-                columns = player_stats_columns_type_mapping[index]
-                column_names = list(columns.keys())
-                table_data = parse_player_stats_table(soup, column_names)
-                all_data = merge_player_data(all_data, table_data)
+            results = await asyncio.gather(*tasks)
+
+            all_data = []
+            for result in results:
+                all_data = merge_player_data(all_data, result)
+
             return all_data
 
         except Exception as e:

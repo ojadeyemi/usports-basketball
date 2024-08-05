@@ -44,7 +44,11 @@ def __get_sport_identifier(gender: str) -> str:
 
 def __construct_urls(gender: str, season_option: str) -> str:
     sport = __get_sport_identifier(gender)
-    base_url = SEASON_URLS[season_option]
+    try:
+        base_url = SEASON_URLS[season_option]
+    except KeyError:
+        available_options = ", ".join(SEASON_URLS.keys())
+        raise ValueError(f"Invalid season option {season_option}. Available options: {available_options}")
 
     player_stats_url = f"{BASE_URL}/{sport}/{base_url}/players?pos=sh&r=0&sort={{sort_category}}"
     return player_stats_url
@@ -62,7 +66,7 @@ def __construct_player_urls(gender: str, season_option: str) -> list[str]:
 
 
 async def __fetch_with_delay(url: str) -> DataFrame:
-    await asyncio.sleep(random.uniform(1, 3))
+    await asyncio.sleep(random.uniform(0.5, 2.0))
     logger.debug(f"Fetching stats on category:{url[-5:]}")
     players_df = await get_players_stats_df(url)
     return players_df
@@ -70,11 +74,13 @@ async def __fetch_with_delay(url: str) -> DataFrame:
 
 async def __fetch_and_merge_player_stats(urls: list[str]) -> DataFrame:
     all_dataframes = []
+
+    batch_size = 5
     num_of_urls = len(urls)
 
-    for i in range(0, num_of_urls, 5):  # Process in batches of 5
-        logger.info(f"GETTING BATCH {i+1} - {i+5} out of {num_of_urls}")
-        batch_urls = urls[i : i + 5]
+    for i in range(0, num_of_urls, batch_size):
+        logger.debug(f"GETTING BATCH {i+1} - {i+batch_size} out of {num_of_urls}")
+        batch_urls = urls[i : i + batch_size]
         tasks = [__fetch_with_delay(url) for url in batch_urls]
         dataframes = await asyncio.gather(*tasks)
         all_dataframes.extend(dataframes)
@@ -82,9 +88,7 @@ async def __fetch_and_merge_player_stats(urls: list[str]) -> DataFrame:
     if not all_dataframes:
         raise EmptyDataError("No data received, all DataFrames are empty")
 
-    merged_df = concat(all_dataframes, ignore_index=True)
-    merged_df = merged_df.drop_duplicates()
-    merged_df = merged_df.reset_index(drop=True)
+    merged_df = concat(all_dataframes, ignore_index=True).drop_duplicates().reset_index(drop=True)
 
     return merged_df
 

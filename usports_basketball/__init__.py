@@ -8,7 +8,7 @@ Dependencies:
     - BeautifulSoup (bs4)
     - requests
     - pytest
-    - playwright (Chromium only)
+    - playwright
 
 Functions:
 - usport_players_stats: Fetch player statistics.
@@ -19,16 +19,12 @@ These functions return pandas DataFrames with the requested statistics.
 Examples:
 >>> from usports_basketball import usport_players_stats, usport_teams_stats
 
-# Fetch statistics for men's players
->>> men_player_stats_df = usport_players_stats('m')
+>>> men_player_stats_df = usport_players_stats('m') # men's players stats
 
-# Fetch statistics for women's players playing in U Sports championship Final 8
->>> women_player_stats_df = usport_players_stats('w', 'championship')
+>>> women_player_stats_df = usport_players_stats('w', 'championship') # women's players in U Sports championship Final 8
 
-# Fetch statistics for men's teams
 >>> men_team_stats_df = usport_teams_stats('m')
 
-# Fetch statistics for women's playoff teams
 >>> women_team_stats_df = usport_teams_stats('w', 'playoffs')
 
 Author:
