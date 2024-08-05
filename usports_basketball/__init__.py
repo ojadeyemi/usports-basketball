@@ -1,35 +1,44 @@
-
 """
-USports Basketball Statistics Web Scraping and Processing Package
+USports Basketball Statistics Module
 
-This package provides functions for web scraping and processing basketball statistics data from the USports website.
- It encompasses functionality for retrieving both team and player statistics.
+This module provides functions to fetch and process basketball statistics for men's and women's teams and players.
 
 Dependencies:
-    - requests
-    - BeautifulSoup (bs4)
     - pandas
-    
+    - BeautifulSoup (bs4)
+    - requests
+    - pytest
+    - playwright (Chromium only)
+
 Functions:
-- usports_team_stats:  Retrieves and handles team statistics such as standings, win-loss records, and key team metrics.
-- usports_player_stats:  Retrieves and processes player statistics like points scored, field goal percentage, and other individual player metrics.
+- usport_players_stats: Fetch player statistics.
+- usport_teams_stats: Fetch team statistics.
 
-These functions return pandas DataFrames containing the respective statistics data.
-Note: This is based on current season only.
-For previous season's stats, adjustment to both team and player scraping files are needed.
+These functions return pandas DataFrames with the requested statistics.
 
-# Example:
->>> from usportsbballstats import usports_team_stats, usports_player_stats
-#Fetching and processing men's team and players statistics 
->>> men_team_stats_df = usports_team_stats('men')
-# Fetching and processing player statistics data for men's players
->>> men_player_stats_df = usports_player_stats('men') \n
+Examples:
+>>> from usports_basketball import usport_players_stats, usport_teams_stats
+
+# Fetch statistics for men's players
+>>> men_player_stats_df = usport_players_stats('m')
+
+# Fetch statistics for women's players playing in U Sports championship Final 8
+>>> women_player_stats_df = usport_players_stats('w', 'championship')
+
+# Fetch statistics for men's teams
+>>> men_team_stats_df = usport_teams_stats('m')
+
+# Fetch statistics for women's playoff teams
+>>> women_team_stats_df = usport_teams_stats('w', 'playoffs')
 
 Author:
     OJ Adeyemi
 
 Date Created:
-    March 1, 2024
+    August 6, 2024
 """
-from .team_stats import usports_team_stats
-from .player_stats import usports_player_stats
+
+from .player_stats import usport_players_stats
+from .team_stats import usport_teams_stats
+
+__all__ = ["usport_players_stats", "usport_teams_stats"]

@@ -1,19 +1,13 @@
-player_stats_columns_type_mapping = [
+"""Contains mappings and configurations for player statistics and their data payload."""
+
+player_stats_columns_type_mapping: list[dict[str, type]] = [
     {
-        "lastname_initials": str,
-        "first_name": str,
-        "school": str,
-        "games_played": int,
-        "games_started": int,
         "minutes_played": int,
         "field_goal_made": int,
-        "field_goal_attempted": int,
         "field_goal_percentage": float,
         "three_pointers_made": int,
-        "three_pointers_attempted": int,
         "three_pointers_percentage": float,
         "free_throws_made": int,
-        "free_throws_attempted": int,
         "free_throws_percentage": float,
         "total_points": int,
     },

@@ -2,10 +2,25 @@ from typing import Any
 
 from bs4 import BeautifulSoup
 
-from utils import clean_text, split_made_attempted
+from .helpers import clean_text, split_made_attempted
 
 
-def parse_team_stats_table(soup: BeautifulSoup, table_index: int, columns: list[str]):
+def merge_team_data(existing_data: list[dict[str, Any]], new_data: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """Merge existing and new team data stats"""
+    data_dict = {f"{item['team_name']}_{item['games_played']}": item for item in existing_data}
+
+    for new_item in new_data:
+        key = f"{new_item['team_name']}_{new_item['games_played']}"
+        if key in data_dict:
+            data_dict[key].update(new_item)
+        else:
+            data_dict[key] = new_item
+
+    return list(data_dict.values())
+
+
+def parse_team_stats_table(soup: BeautifulSoup, columns: list[str]) -> list[dict[str, Any]]:
+    """Parse team stats data from an HTML table"""
     table_data: list[dict[str, Any]] = []
     rows = soup.find_all("tr")
 
@@ -38,7 +53,8 @@ def parse_team_stats_table(soup: BeautifulSoup, table_index: int, columns: list[
 
 
 def parse_standings_table(soup: BeautifulSoup, columns: list[str]) -> list[dict[str, Any]]:
-    table_data = []
+    """Parse standings data from an HTML table"""
+    table_data: list[dict[str, Any]] = []
 
     # Find all rows in the table
     rows = soup.find_all("tr")

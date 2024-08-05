@@ -1,4 +1,6 @@
-team_stats_columns_type_mapping = [
+"""Contains mappings and configurations for team statistics, conferences, and standings."""
+
+team_stats_columns_type_mapping: list[dict[str, type]] = [
     {
         "field_goal_made": int,
         "field_goal_percentage": float,
@@ -103,7 +105,7 @@ team_conference = {
     "York": "OUA Central",
 }
 
-standings_type_mapping = {
+standings_type_mapping: dict[str, type] = {
     "team_name": str,
     "games_played": int,
     "total_wins": int,
@@ -114,13 +116,13 @@ standings_type_mapping = {
     "total_points_against": int,
 }
 
-stat_group_options = [
-    "#sh-0",
-    "#rb-0",
-    "#bc-0",
-    "#eff-0",
-    "#dsh-0",
-    "#drb-0",
-    "#dbc-0",
-    "#deff-0",
-]
+stat_group_options = {
+    "Offense Shooting": "#sh-0",
+    "Off Rebounding": "#rb-0",
+    "Off Ball Control": "#bc-0",
+    "Off Efficiency": "#eff-0",
+    "Defense Shooting": "#dsh-0",
+    "Def Rebounding": "#drb-0",
+    "Defense Ball Control": "#dbc-0",
+    "Def Efficiency": "#deff-0",
+}
