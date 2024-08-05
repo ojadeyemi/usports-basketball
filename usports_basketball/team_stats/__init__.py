@@ -38,7 +38,7 @@ def __get_sport_identifier(gender: str) -> str:
         return "mbkb"
     if gender == "women":
         return "wbkb"
-    raise ValueError("Gender must be 'men' or 'women'")
+    raise ValueError("Argument must be 'men' or 'women'")
 
 
 def __construct_urls(gender: str, season_option: str) -> tuple[str, str]:
