@@ -11,6 +11,7 @@ logger = logging.getLogger(__name__)
 
 
 async def get_team_stats_df(stats_url: str) -> pd.DataFrame:
+    """function to handle teams stats to a pandas DataFrame"""
     team_stats = await fetching_team_stats(stats_url)
 
     df = pd.DataFrame(team_stats)

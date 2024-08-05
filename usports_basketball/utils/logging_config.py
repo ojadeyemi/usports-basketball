@@ -2,6 +2,7 @@ import logging
 
 
 def setup_logging():
+    """setsup logging configurations"""
     logging.basicConfig(
         level=logging.INFO,  # Set the logging level (DEBUG, INFO, WARNING, ERROR, CRITICAL)
         format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",

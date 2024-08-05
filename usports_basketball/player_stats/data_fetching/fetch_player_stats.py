@@ -6,6 +6,7 @@ from ..player_settings import player_stats_columns_type_mapping
 
 
 async def fetching_player_stats(url: str):
+    """Function for handling fetching data from players stat url"""
     async with async_playwright() as p:
         browser = await p.chromium.launch(headless=True, timeout=10000)
         page = await browser.new_page()
@@ -29,6 +30,6 @@ async def fetching_player_stats(url: str):
             return all_data
 
         except Exception as e:
-            raise RuntimeError(f"Error fetching team stats: {e}")
+            raise RuntimeError(f"Error fetching team stats: {e}") from e
         finally:
             await browser.close()

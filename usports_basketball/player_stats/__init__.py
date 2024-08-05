@@ -37,7 +37,7 @@ logger = logging.getLogger(__name__)
 def __get_sport_identifier(gender: str) -> str:
     if gender == "men":
         return "mbkb"
-    elif gender == "women":
+    if gender == "women":
         return "wbkb"
     else:
         raise ValueError("Gender must be 'men' or 'women'")

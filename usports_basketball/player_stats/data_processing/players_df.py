@@ -6,6 +6,7 @@ from ..player_settings import player_stats_columns_type_mapping
 
 
 async def get_players_stats_df(stats_url: str) -> pd.DataFrame:
+    """COnstruct pandas Dataframe of players data"""
     player_stats = await fetching_player_stats(stats_url)
 
     df = pd.DataFrame(player_stats)

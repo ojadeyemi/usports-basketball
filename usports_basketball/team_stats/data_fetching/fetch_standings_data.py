@@ -8,6 +8,7 @@ from ..team_settings import standings_type_mapping
 
 
 async def fetching_standings_data(standings_url: str) -> list[dict[str, Any]]:
+    """function for handling fetch standings data from standings url"""
     async with async_playwright() as p:
         browser = await p.chromium.launch(headless=True, timeout=10000)
         page = await browser.new_page()

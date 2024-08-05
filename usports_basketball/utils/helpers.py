@@ -12,8 +12,7 @@ async def fetch_table_html(page: Page, index: int):
         table_html = await tables[index].inner_html()
         table_html = table_html.replace("\n", "").replace("\t", "")
         return table_html
-    else:
-        raise IndexError(f"Table index {index} is out of bounds. Only {len(tables)} tables found.")
+    raise IndexError(f"Table index {index} is out of bounds. Only {len(tables)} tables found.")
 
 
 def split_made_attempted(value: str) -> tuple[int, int]:
@@ -22,7 +21,7 @@ def split_made_attempted(value: str) -> tuple[int, int]:
         made, attempted = value.split("-")
         return int(made), int(attempted)
     except ValueError as e:
-        raise ValueError(f"Error splitting made and attempted values from '{value}': {e}")
+        raise ValueError(f"Error splitting made and attempted values from '{value}': {e}") from e
 
 
 def clean_text(text: str) -> str:
