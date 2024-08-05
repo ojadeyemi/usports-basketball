@@ -17,7 +17,22 @@ maintainers = [{ name = "OJ Adeyemi", email = "ojieadeyemi@gmail.com" }]
 description = "A Python package for current U Sports basketball stats."
 readme = "README.md"
 license = { file = "LICENSE" }
-keywords = ["basketball", "usports"]
+keywords = [
+    "basketball",
+    "usports",
+    "statistics",
+    "data analysis",
+    "web scraping",
+    "python package",
+    "pandas",
+    "beautifulsoup",
+    "playwright",
+    "sports analytics",
+    "college basketball",
+    "developer tools",
+    "data fetching",
+]
+
 classifiers = [
     "Development Status :: 5 - Stable",
     "License :: OSI Approved :: MIT License",
@@ -29,12 +44,14 @@ classifiers = [
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3 :: Only",
+    "Framework :: Playwright",
 ]
 
 
 [project.urls]
 Repository = "https://github.com/ojadeyemi/usports-basketball.git"
 Issues = "https://github.com/ojadeyemi/usports-basketball/issues"
+Changelog = "https://github.com/ojadeyemi/usports-basketball/blob/main/CHANGELOG.md"
 
 
 [tool.pytest.ini_options]
