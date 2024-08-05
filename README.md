@@ -1,13 +1,20 @@
-# usports-basketball [![PyPI Latest Release](https://img.shields.io/pypi/v/usports-basketball?color=orange)](https://pypi.org/project/usports-basketball/) [![License](https://img.shields.io/pypi/l/usports-basketball.svg)](https://github.com/ojadeyemi/usports-basketball/blob/main/LICENSE) [![Downloads](https://static.pepy.tech/badge/usports-basketball)](https://pepy.tech/project/usports-basketball) [![Package Status](https://img.shields.io/pypi/status/usports-basketball.svg)](https://pypi.org/project/usports-basketball/)
+# 🏀 usports-basketball 
 
-**usports-basketball** is a Python package that fetches and analyzes current basketball stats from the [U Sports website](https://usports.ca/en). With two simple functions—one for fetching team stats and the other for player stats—users can easily retrieve detailed data for either the men's or women's league. Each function returns a DataFrame with the relevant statistics statistics, allowing users to gather data for analysis and insights.
+[![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
+[![PyPI Latest Release](https://img.shields.io/pypi/v/usports-basketball?color=orange)](https://pypi.org/project/usports-basketball/) 
+[![License](https://img.shields.io/pypi/l/usports-basketball.svg)](https://github.com/ojadeyemi/usports-basketball/blob/main/LICENSE) 
+[![Downloads](https://static.pepy.tech/badge/usports-basketball)](https://pepy.tech/project/usports-basketball) 
+[![Package Status](https://img.shields.io/pypi/status/usports-basketball.svg)](https://pypi.org/project/usports-basketball/)
 
+**usports-basketball** is a Python package that fetches and analyzes current basketball stats from the [U Sports website](https://usports.ca/en). 
 
- > # **NOTE: USPORTS has changed the structure of their website therefore  [usports-basketball](https://github.com/ojadeyemi/usports-basketball "Python package for current usports basketball stats") package will not be able to webscape data. Hopefully I find out how to update it.**
- 
+With two simple functions you can easily retrieve detailed data for either the men's or women's league. 
+- `usport_teams_stats`: Fetch team stats.
+- `usport_players_stats`: Fetch player stats.
 
+Each function returns a pandas DataFrame with the relevant statistics, allowing users to gather data for analysis and insights.
 
-## Installation
+## 📥 Installation
 
 You can install the package via pip:
 
@@ -15,23 +22,37 @@ You can install the package via pip:
 pip install usports-basketball
 ```
 
-## Dependencies
+## 🧩 Dependencies
 
 This package relies on the following dependencies:
 
-- requests
-- BeautifulSoup (bs4)
 - pandas
+- BeautifulSoup (bs4)
+- requests
+- pytest
+- playwright
+
+## Installing Chromium for Playwright
+
+After installing the package, you'll need to install Playwright's Chromium browser. Run the following command:
+
+```bash
+playwright install chromium
+```
 
 ## Functions
 
-### `usports_team_stats`
+### `usport_teams_stats`
 
 This function fetches and processes team statistics data, including standings, win-loss totals, shooting percentages, and other relevant team metrics for the current U Sports basketball season.
 
 #### Parameters
 
-- `arg` (str): The league for which you want to retrieve team statistics. Valid values are `'men'` and `'women'`.
+- `arg` (str): The league for which you want to retrieve team statistics. Valid values are `'men'` and `'women'` or `'m'` and `'w'` (case-insensitive).
+- `season_option` (str, optional): The season type to fetch data for. Options are:
+  - `'regular'` (default): Regular season statistics.
+  - `'playoffs'`: Playoff season statistics.
+  - `'championship'`: Championship season statistics.
 
 #### Returns
 
@@ -43,30 +64,34 @@ This function fetches and processes player statistics data, including total game
 
 #### Parameters
 
-- `arg` (str): The league for which you want to retrieve player statistics. Valid values are `'men'` and `'women'`.
+- `arg` (str): The league for which you want to retrieve team statistics. Valid values are `'men'` and `'women'` or `'m'` and `'w'` (case-insensitive).
+- `season_option` (str, optional): The season type to fetch data for. Options are:
+  - `'regular'` (default): Regular season statistics.
+  - `'playoffs'`: Playoff season statistics.
+  - `'championship'`: Championship season statistics.
 
 #### Returns
 
 - `DataFrame`: A pandas DataFrame containing the player statistics data.
 
-## Examples
+## Usage
 
 - ### Fetching current stats from the league
 
 ```python
-from usports_basketball import usports_team_stats, usports_player_stats
+from usports_basketball import usport_teams_stats, usports_player_stats
 
 # Fetching and processing men's team statistics
-men_team_stats_df = usports_team_stats('men')
+men_team_stats_df = usport_teams_stats('m')
 
 # Fetching and processing men's player statistics
-men_player_stats_df = usports_player_stats('men')
+men_player_stats_df = usport_players_stats('m')
 
-# Fetching and processing women's team statistics
-women_team_stats_df = usports_team_stats('women')
+# Fetch statistics for women's playoff teams
+women_team_stats_df = usport_teams_stats('w', 'playoffs')
 
-# Fetching and processing women's player statistics
-women_player_stats_df = usports_player_stats('women')
+# Fetch statistics for women's players playing in U Sports championship Final 8
+women_player_stats_df = usport_players_stats('w', 'championship')
 ```
 
 - ### Viewing Column Names
@@ -82,43 +107,6 @@ print("\nColumn names in men's player statistics DataFrame:")
 print(men_player_stats_df.columns.tolist())
 ```
 
-- ### Getting top 10 scorers in OUA Conference (Men's League)
-
-```python
-# Initialize a DataFrame to store OUA teams
-oua_teams_df = women_team_stats_df[women_team_stats_df['conference'].isin(['OUA East', 'OUA West', 'OUA Central'])][['team_name']].copy()
-# Filter the DataFrame to include only players from the OUA conference
-oua_players_df = men_player_stats_df[men_player_stats_df['school'].isin(oua_teams_df['team_name'])]
-
-# Calculate points per game (PPG) for each player. Rounded to 2 decimal places
-oua_players_df['points_per_game'] = round(oua_players_df['total_points'] / oua_players_df['games_played'], 2)
-
-# Sort the DataFrame by points per game in descending order
-oua_players_df = oua_players_df.sort_values(by='points_per_game', ascending=False)
-
-# Retrieve the top 10 players leading in points per game
-top_10_players = oua_players_df.head(10)
-
-# Print the top 10 players
-print(top_10_players[['lastname_initials', 'first_name', 'school', 'points_per_game']].to_string(index=False))
-```
-
-- ### Getting teams who have a winning streak of at least 5 games in a row (Women's League)
-
-```python
-# Filter the DataFrame to include only teams with a streak of 5+ wins
-teams_with_win_streak = women_team_stats_df[women_team_stats_df['streak'].str.startswith('W', na=False)].copy()
-
-# Convert 'streak' column to numeric for comparison
-teams_with_win_streak['streak'] = teams_with_win_streak['streak'].str.extract('(\d+)').astype(float)
-
-# Filter teams with streak of 5+ wins
-teams_with_5plus_wins = teams_with_win_streak[teams_with_win_streak['streak'] >= 5]
-
-# Print teams with streak of 5+ wins
-print("Teams with streak of 5+ wins:")
-print(teams_with_5plus_wins[['team_name', 'games_played', 'conference', 'win_percentage']])
-```
 
 - ### Exporting DataFrame to different files
 

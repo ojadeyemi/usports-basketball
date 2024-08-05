@@ -1,6 +1,10 @@
 .vscode/
 .idea/
+<<<<<<< HEAD
 .env
+=======
+*env
+>>>>>>> feat/playwright
 
 
 # Python files #
