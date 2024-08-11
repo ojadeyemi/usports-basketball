@@ -55,7 +55,8 @@ def parse_team_stats_table(soup: BeautifulSoup, columns: list[str]) -> list[dict
 def parse_standings_table(soup: BeautifulSoup, columns: list[str]) -> list[dict[str, Any]]:
     """Parse standings data from an HTML table"""
     table_data: list[dict[str, Any]] = []
-
+    #team_name_tags = soup.find_all("a", href=True)    #contains all tag
+    
     # Find all rows in the table
     rows = soup.find_all("tr")
 
