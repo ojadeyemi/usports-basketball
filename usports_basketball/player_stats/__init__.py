@@ -23,7 +23,7 @@ import random
 from pandas import DataFrame, concat
 from pandas.errors import EmptyDataError
 
-from ..utils import setup_logging
+from ..utils import get_sport_identifier, setup_logging
 from .data_processing import get_players_stats_df
 from .player_settings import sort_categories
 
@@ -34,16 +34,8 @@ setup_logging()
 logger = logging.getLogger(__name__)
 
 
-def __get_sport_identifier(gender: str) -> str:
-    if gender == "men":
-        return "mbkb"
-    if gender == "women":
-        return "wbkb"
-    raise ValueError("Argument must be 'men' or 'women'")
-
-
 def __construct_urls(gender: str, season_option: str) -> str:
-    sport = __get_sport_identifier(gender)
+    sport = get_sport_identifier(gender)
     try:
         base_url = SEASON_URLS[season_option]
     except KeyError as e:
@@ -67,7 +59,7 @@ def __construct_player_urls(gender: str, season_option: str) -> list[str]:
 
 async def __fetch_with_delay(url: str) -> DataFrame:
     await asyncio.sleep(random.uniform(0.5, 2.0))
-    logger.debug(f"Fetching stats on category:{url[-5:]}")
+    logger.debug(f"Fetching stats on category: {url[-5:]}")
     players_df = await get_players_stats_df(url)
     return players_df
 
@@ -75,7 +67,7 @@ async def __fetch_with_delay(url: str) -> DataFrame:
 async def __fetch_and_merge_player_stats(urls: list[str]) -> DataFrame:
     all_dataframes = []
 
-    batch_size = 5
+    batch_size = 10
     num_of_urls = len(urls)
 
     for i in range(0, num_of_urls, batch_size):
@@ -114,7 +106,7 @@ def usport_players_stats(arg: str, season_option: str = "regular") -> DataFrame:
     elif arg in ["w", "women"]:
         gender = "women"
     else:
-        raise ValueError("The argument 'arg' should be either 'men' or 'women'")
+        raise ValueError("The argument 'arg' should be either 'men', 'm', 'w', or 'women'")
 
     logger.info(f"FETCHING {gender.upper()} {season_option.upper()} SEASON PLAYERS STATS")
     urls = __construct_player_urls(gender, season_option)

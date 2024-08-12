@@ -22,7 +22,7 @@ import logging
 import pandas as pd
 from pandas import DataFrame
 
-from ..utils import setup_logging
+from ..utils import get_sport_identifier, setup_logging
 from .data_processing import get_standings_df, get_team_stats_df
 from .team_settings import team_conference
 
@@ -33,18 +33,15 @@ setup_logging()
 logger = logging.getLogger(__name__)
 
 
-def __get_sport_identifier(gender: str) -> str:
-    if gender == "men":
-        return "mbkb"
-    if gender == "women":
-        return "wbkb"
-    raise ValueError("Argument must be 'men' or 'women'")
-
-
 def __construct_urls(gender: str, season_option: str) -> tuple[str, str]:
     """Construct URLs for fetching team stats and standings data based on gender and season option."""
-    sport = __get_sport_identifier(gender)
-    base_url = SEASON_URLS[season_option]
+    sport = get_sport_identifier(gender)
+    try:
+        base_url = SEASON_URLS[season_option]
+    except KeyError as e:
+        available_options = ", ".join(SEASON_URLS.keys())
+        raise ValueError(f"Invalid season option {season_option}. Available options: {available_options}") from e
+    
     team_stats_url = f"{BASE_URL}/{sport}/{base_url}/teams"
     standings_url = f"{BASE_URL}/{sport}/2023-24/standings-conf"
     return team_stats_url, standings_url
@@ -94,7 +91,7 @@ def usport_teams_stats(arg: str, season_option: str = "regular") -> DataFrame:
     elif arg in ["w", "women"]:
         gender = "women"
     else:
-        raise ValueError("The argument 'arg' should be either 'men' or 'women'")
+        raise ValueError("The argument 'arg' should be either 'men', 'm', 'w', or 'women'")
 
     logger.info(f"FETCHING CURRENT {gender.upper()} {season_option.upper()} SEASON TEAM STATS\n")
 

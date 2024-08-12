@@ -45,8 +45,8 @@ expected_reg_season_column_names = [
     "team_fouls_per_game_against",
     "points_per_game_against",
     "conference",
+    "streak",
     # "last_ten_games",
-    # "streak",
 ]
 
 expected_players_df_columns = [
@@ -119,9 +119,9 @@ men_team_victoria_2023_stats = {
     "conference": "CW",
     "total_wins": 17,
     "total_losses": 3,
-    # "win_percentage": 0.85,
+    "win_percentage": 0.850,
     # "last_ten_games": "9-1",
-    # "streak": "W 9",
+    "streak": "W9",
     "total_points": 1839,
     "total_points_against": 1467,
 }

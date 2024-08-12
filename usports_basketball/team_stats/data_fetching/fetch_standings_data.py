@@ -1,11 +1,42 @@
+import asyncio
 from typing import Any
 
 from bs4 import BeautifulSoup
-from pandas import DataFrame
-from playwright.async_api import Page, async_playwright
+from playwright.async_api import async_playwright
 
-from ...utils import get_random_header, merge_team_data, parse_standings_table
+from ...utils import clean_text, get_random_header, split_made_attempted  # noqa: F401
 from ..team_settings import standings_type_mapping
+from .fetch_team_stats import merge_team_data
+
+
+def parse_standings_table(soup: BeautifulSoup, columns: list[str]) -> list[dict[str, Any]]:
+    """Parse standings data from an HTML table"""
+    table_data: list[dict[str, Any]] = []
+    # team_name_tags = soup.find_all("a", href=True)    #contains all tag
+
+    # Find all rows in the table
+    rows = soup.find_all("tr")
+
+    for row in rows:
+        row_data = {}
+
+        # Extract the team name from the <th> element
+        team_name_th = row.find("th", class_="team-name")
+        if team_name_th:
+            team_name_tag = team_name_th.find("a")
+            if team_name_tag:
+                team_name = clean_text(team_name_tag.get_text())
+                row_data["team_name"] = team_name
+
+        # Extract the column data from <td> elements
+        cols = row.find_all("td")
+        if cols:
+            for col, column_name in zip(cols, columns):
+                row_data[column_name] = clean_text(col.get_text())
+
+            table_data.append(row_data)
+
+    return table_data
 
 
 async def fetching_standings_data(standings_url: str) -> list[dict[str, Any]]:
@@ -22,7 +53,7 @@ async def fetching_standings_data(standings_url: str) -> list[dict[str, Any]]:
             lambda route: route.abort(),
         )
 
-        await page.goto(standings_url, timeout=10000, wait_until="networkidle")
+        await page.goto(standings_url, timeout=10000)
 
         await page.wait_for_selector("tbody", timeout=10000)
         tables = await page.query_selector_all("tbody")
@@ -30,6 +61,7 @@ async def fetching_standings_data(standings_url: str) -> list[dict[str, Any]]:
         tables_length = len(tables)
 
         all_standings = []
+        all_team_records = []
         for i in range(0, tables_length):
             table = await tables[i].inner_html()
 
@@ -39,68 +71,64 @@ async def fetching_standings_data(standings_url: str) -> list[dict[str, Any]]:
 
             column_names = list(standings_type_mapping.keys())[1:]
             standings_data = parse_standings_table(soup, column_names)
+            team_record_data = await fetch_team_record_data(soup)
+
             all_standings = merge_team_data(all_standings, standings_data)
+            all_team_records = merge_team_data(all_team_records, team_record_data)
 
         await browser.close()
 
-        return all_standings
+        return all_standings, all_team_records
 
 
-async def _fetch_team_record(page: Page, team_url: str, team_name: str) -> DataFrame:
-    """Click the team's link, extract the team stats, and return them as a DataFrame with a team_name column."""
-    await page.goto(team_url)
-
-    # Extract the <ul> tag with the class name 'team-stats'
-    ul_content = await page.locator("ul.team-stats").inner_html()
-
-    # Parse the HTML with BeautifulSoup
-    soup = BeautifulSoup(ul_content, "html.parser")
-    stats = {"team_name": team_name}
-
-    # Mapping categories to DataFrame columns
-    category_mapping = {"Overall": "overall", "PCT": "pct", "Conf": "conf", "C.PCT": "c.pct", "Streak": "streak", "Home": "home", "Away": "away", "Neutral": "neutral"}
-
-    # Loop through each <li> tag and extract the relevant data
-    for li in soup.find_all("li"):
-        category = li.find("div", class_="small text-uppercase text-muted").get_text(strip=True)
-        value = li.find("div", class_="fs-4 lh-1 text-nowrap fw-bold").get_text(strip=True)
-        if category in category_mapping:
-            stats[category_mapping[category]] = value
-
-    # Convert the dictionary into a DataFrame with one row
-    df = DataFrame([stats])
-    print(df)
-    return df
-
-
-async def parse_team_links_and_fetch_data(page, team_name_tag: Any) -> DataFrame:
-    """Fetch the data for a specific team based on the provided team_name_tag."""
-    # Extract the team URL and name from the <a> tag
-    href = team_name_tag.get("href")
-    team_name = team_name_tag.get_text(strip=True)
-    team_url = f"https://universitysport.prestosports.com{href}"
-
-    print(f"Fetching data for team: {team_name}")
-
-    # Fetch the team's data
-    df = await _fetch_team_record(page, team_url, team_name)
-
-    return df
-
-
-async def fetch_all_teams_data(team_name_tags: list[Any]) -> list[DataFrame]:
-    """Fetch data for all teams based on the provided list of <a> tags."""
+async def fetch_team_record_data(soup: BeautifulSoup) -> list[dict[str, str]]:
+    """Fetch data for all teams based on the provided soup."""
     async with async_playwright() as p:
-        browser = await p.chromium.launch(headless=False)
-        page = await browser.new_page()
+        browser = await p.chromium.launch(headless=True, timeout=5000)
 
-        # Block unnecessary resources to speed up page load
-        await page.route("**/*.{png,jpg,jpeg,gif,webp,css,woff2,woff,js}", lambda route: route.abort())
+        # Extract all team <a> tags from the standings page
+        team_name_tags = soup.find_all("a", href=True)
 
-        all_team_data = []
-        for team_name_tag in team_name_tags:
-            df = await parse_team_links_and_fetch_data(page, team_name_tag)
-            all_team_data.append(df)
+        # Fetch all team records concurrently
+        async def fetch_team_record(team_name_tag: Any) -> dict[str, str]:
+            page = await browser.new_page()
+            headers = get_random_header()
+            await page.set_extra_http_headers(headers)
+
+            # Block unnecessary resources to speed up page load
+            await page.route("**/*.{png,jpg,jpeg,gif,webp,css,woff2,woff,js}", lambda route: route.abort())
+
+            href = team_name_tag.get("href")
+            team_name = clean_text(team_name_tag.get_text(strip=True))
+            team_url = f"https://universitysport.prestosports.com{href}"
+
+            await page.goto(team_url, wait_until="networkidle")
+
+            # Extract the <ul> tag with the class name 'team-stats'
+            ul_content = await page.locator("ul.team-stats").inner_html()
+
+            # Parse the HTML with BeautifulSoup
+            team_soup = BeautifulSoup(ul_content, "html.parser")
+            stats = {"team_name": team_name}
+
+            # Mapping categories to dictionary keys
+            category_mapping = {"Streak": "streak", "Home": "home", "Away": "away"}
+
+            # Loop through each <li> tag and extract the relevant data
+            for li in team_soup.find_all("li"):
+                category = li.find("div", class_="small text-uppercase text-muted").get_text(strip=True)
+                value = li.find("div", class_="fs-4 lh-1 text-nowrap fw-bold").get_text(strip=True)
+                if category in category_mapping:
+                    stats[category_mapping[category]] = value
+
+            await page.close()
+            return stats
+
+        # Create tasks for each team to fetch data concurrently
+        tasks = [fetch_team_record(tag) for tag in team_name_tags]
+
+        # Run all tasks concurrently and gather the results
+        all_team_data = await asyncio.gather(*tasks)
 
         await browser.close()
 

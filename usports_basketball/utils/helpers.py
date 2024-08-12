@@ -46,3 +46,11 @@ def convert_types(df: DataFrame, type_mapping: dict[str, type]) -> DataFrame:
             df[column] = df[column].replace("-", 0)
         df[column] = df[column].astype(dtype)
     return df
+
+def get_sport_identifier(gender: str) -> str:
+    """Get the sport identifier based on gender."""
+    if gender == "men":
+        return "mbkb"
+    if gender == "women":
+        return "wbkb"
+    raise ValueError("Argument must be 'men' or 'women'")
