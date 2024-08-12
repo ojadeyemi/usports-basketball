@@ -4,7 +4,7 @@ from typing import Any
 from bs4 import BeautifulSoup
 from playwright.async_api import async_playwright
 
-from ...utils import clean_text, get_random_header, split_made_attempted  # noqa: F401
+from ...utils import clean_text, get_random_header
 from ..team_settings import standings_type_mapping
 from .fetch_team_stats import merge_team_data
 
