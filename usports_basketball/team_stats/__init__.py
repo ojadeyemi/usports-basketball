@@ -53,9 +53,9 @@ async def __combine_data(gender: str, season_option: str) -> DataFrame:
         raise ValueError(f"Invalid season_option: {season_option}. Must be one of {', '.join(SEASON_URLS.keys())}")
 
     team_stats_url, standings_url = __construct_urls(gender, season_option)
-    logger.info(f"FETCHING {gender.upper()} {season_option.upper()} SEASON STANDINGS")
+    logger.debug(f"FETCHING {gender.upper()} {season_option.upper()} SEASON STANDINGS")
     standings_df = await get_standings_df(standings_url)
-    logger.info(f"FETCHING {gender.upper()} {season_option.upper()} SEASON STATISTICS\n")
+    logger.debug(f"FETCHING {gender.upper()} {season_option.upper()} SEASON STATISTICS\n")
     team_stats_df = await get_team_stats_df(team_stats_url)
 
     # Update column names if necessary

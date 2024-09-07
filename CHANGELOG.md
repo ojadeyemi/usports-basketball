@@ -2,7 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
-## [2.0.0] - 2024-08-05
+## v2.0.1
+
+### Added
+- Added **streak**, **home**, and **away** stats to `team_stats`.
+
+### Changed
+
+- Updated logger to format messages based on log level. DEBUG level includes state and name; other levels include only the message.
+
+## v2.0.0
 
 ### Added
 

@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "usports-basketball"
-version = "2.0.0"
+version = "2.0.1"
 dependencies = [
     "requests>=2.32",
     "beautifulsoup4>=4.12",
@@ -13,7 +13,6 @@ dependencies = [
 ]
 requires-python = ">=3.9"
 authors = [{ name = "OJ Adeyemi", email = "ojieadeyemi@gmail.com" }]
-maintainers = [{ name = "OJ Adeyemi", email = "ojieadeyemi@gmail.com" }]
 description = "A Python package for current U Sports basketball stats."
 readme = "README.md"
 license = { file = "LICENSE" }
