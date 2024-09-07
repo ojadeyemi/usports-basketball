@@ -41,7 +41,7 @@ def __construct_urls(gender: str, season_option: str) -> tuple[str, str]:
     except KeyError as e:
         available_options = ", ".join(SEASON_URLS.keys())
         raise ValueError(f"Invalid season option {season_option}. Available options: {available_options}") from e
-    
+
     team_stats_url = f"{BASE_URL}/{sport}/{base_url}/teams"
     standings_url = f"{BASE_URL}/{sport}/2023-24/standings-conf"
     return team_stats_url, standings_url

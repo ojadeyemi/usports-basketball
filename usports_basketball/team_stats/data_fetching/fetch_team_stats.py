@@ -1,6 +1,6 @@
 from typing import Any
 
-from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup, Tag
 from playwright.async_api import async_playwright
 
 from ...utils import clean_text, fetch_table_html, get_random_header, split_made_attempted
@@ -24,10 +24,10 @@ def merge_team_data(existing_data: list[dict[str, Any]], new_data: list[dict[str
 def parse_team_stats_table(soup: BeautifulSoup, columns: list[str]) -> list[dict[str, Any]]:
     """Parse team stats data from an HTML table"""
     table_data: list[dict[str, Any]] = []
-    rows = soup.find_all("tr")
+    rows: list[Tag] = soup.find_all("tr")
 
     for row in rows:
-        cols: list = row.find_all("td")
+        cols: list[Tag] = row.find_all("td")
         if len(cols) > 1:
             row_data = {}
             team_name = clean_text(cols[1].get_text())

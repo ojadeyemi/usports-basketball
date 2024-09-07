@@ -1,7 +1,7 @@
 import asyncio
 from typing import Any
 
-from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup, Tag
 from playwright.async_api import async_playwright
 
 from ...utils import clean_text, get_random_header
@@ -12,10 +12,9 @@ from .fetch_team_stats import merge_team_data
 def parse_standings_table(soup: BeautifulSoup, columns: list[str]) -> list[dict[str, Any]]:
     """Parse standings data from an HTML table"""
     table_data: list[dict[str, Any]] = []
-    # team_name_tags = soup.find_all("a", href=True)    #contains all tag
 
     # Find all rows in the table
-    rows = soup.find_all("tr")
+    rows: list[Tag] = soup.find_all("tr")
 
     for row in rows:
         row_data = {}
@@ -29,7 +28,7 @@ def parse_standings_table(soup: BeautifulSoup, columns: list[str]) -> list[dict[
                 row_data["team_name"] = team_name
 
         # Extract the column data from <td> elements
-        cols = row.find_all("td")
+        cols: list[Tag] = row.find_all("td")
         if cols:
             for col, column_name in zip(cols, columns):
                 row_data[column_name] = clean_text(col.get_text())
@@ -90,7 +89,7 @@ async def fetch_team_record_data(soup: BeautifulSoup) -> list[dict[str, str]]:
         team_name_tags = soup.find_all("a", href=True)
 
         # Fetch all team records concurrently
-        async def fetch_team_record(team_name_tag: Any) -> dict[str, str]:
+        async def fetch_team_record(team_name_tag: Tag) -> dict[str, str]:
             page = await browser.new_page()
             headers = get_random_header()
             await page.set_extra_http_headers(headers)
@@ -109,17 +108,23 @@ async def fetch_team_record_data(soup: BeautifulSoup) -> list[dict[str, str]]:
 
             # Parse the HTML with BeautifulSoup
             team_soup = BeautifulSoup(ul_content, "html.parser")
+
             stats = {"team_name": team_name}
 
             # Mapping categories to dictionary keys
             category_mapping = {"Streak": "streak", "Home": "home", "Away": "away"}
 
             # Loop through each <li> tag and extract the relevant data
+
+            li: Tag
             for li in team_soup.find_all("li"):
-                category = li.find("div", class_="small text-uppercase text-muted").get_text(strip=True)
-                value = li.find("div", class_="fs-4 lh-1 text-nowrap fw-bold").get_text(strip=True)
-                if category in category_mapping:
-                    stats[category_mapping[category]] = value
+                category_div = li.find("div", class_=lambda c: c and "small text-uppercase" in c)
+                if category_div:
+                    category = category_div.get_text(strip=True)
+                    if category in category_mapping:
+                        value_div = li.find("div", class_="fs-4 lh-1 text-nowrap fw-bold")
+                        value = value_div.get_text(strip=True) if value_div else None
+                        stats[category_mapping[category]] = value
 
             await page.close()
             return stats

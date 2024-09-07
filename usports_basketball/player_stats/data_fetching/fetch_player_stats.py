@@ -1,7 +1,7 @@
 import asyncio
 from typing import Any
 
-from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup, Tag
 from playwright.async_api import Page, async_playwright
 
 from ...utils import clean_text, fetch_table_html, get_random_header, split_made_attempted
@@ -11,10 +11,10 @@ from ..player_settings import player_stats_columns_type_mapping
 def parse_player_stats_table(soup: BeautifulSoup, columns: list[str]) -> list[dict[str, Any]]:
     """Parse player stats data from an HTML table."""
     table_data: list[dict[str, Any]] = []
-    rows = soup.find_all("tr")
+    rows: list[Tag] = soup.find_all("tr")
 
     for row in rows:
-        cols: list = row.find_all("td")
+        cols: list[Tag] = row.find_all("td")
         if len(cols) > 1:
             row_data = {}
             player_name = clean_text(cols[1].get_text())
