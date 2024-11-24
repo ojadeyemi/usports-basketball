@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## v2.0.2
+
+### Changed
+
+- Updated data for the **2024-25** Season
+- minor bug fixes
+
 ## v2.0.1
 
 ### Added
