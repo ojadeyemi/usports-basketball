@@ -12,7 +12,9 @@ async def fetch_table_html(page: Page, index: int):
     if index < len(tables):
         table_html = await tables[index].inner_html()
         table_html = table_html.replace("\n", "").replace("\t", "")
+
         return table_html
+
     raise IndexError(f"Table index {index} is out of bounds. Only {len(tables)} tables found.")
 
 
@@ -21,6 +23,7 @@ def split_made_attempted(value: str) -> tuple[int, int]:
     try:
         made, attempted = value.split("-")
         return int(made), int(attempted)
+
     except ValueError as e:
         raise ValueError(f"Error splitting made and attempted values from '{value}': {e}") from e
 
@@ -45,7 +48,9 @@ def convert_types(df: DataFrame, type_mapping: dict[str, type]) -> DataFrame:
     for column, dtype in type_mapping.items():
         if dtype in [int, float]:
             df[column] = df[column].replace("-", 0)
+
         df[column] = df[column].astype(dtype)
+
     return df
 
 
@@ -53,20 +58,24 @@ def get_sport_identifier(gender: str) -> str:
     """Get the sport identifier based on gender."""
     if gender == "men":
         return "mbkb"
+
     if gender == "women":
         return "wbkb"
+
     raise ValueError("Argument must be 'men' or 'women'")
 
 
 def normalize_gender_arg(arg: Literal["m", "men", "w", "women"]) -> str:
     """Normalize the 'arg' input to 'men' or 'women'."""
     arg_lower = arg.lower()
+
     if arg_lower in ["m", "men"]:
         return "men"
-    elif arg_lower in ["w", "women"]:
+
+    if arg_lower in ["w", "women"]:
         return "women"
-    else:
-        raise ValueError("The argument 'arg' should be either 'men', 'm', 'w', or 'women'")
+
+    raise ValueError("The argument 'arg' should be either 'men', 'm', 'w', or 'women'")
 
 
 def validate_season_option(season_option: str, available_options: dict) -> str:
@@ -75,4 +84,5 @@ def validate_season_option(season_option: str, available_options: dict) -> str:
     if season_option_lower not in available_options:
         options = ", ".join(available_options.keys())
         raise ValueError(f"Invalid season_option: {season_option}. Must be one of {options}")
+
     return available_options[season_option_lower]

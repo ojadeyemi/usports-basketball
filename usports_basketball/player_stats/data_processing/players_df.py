@@ -21,4 +21,5 @@ async def get_players_stats_df(stats_url: str) -> pd.DataFrame:
 
     df = convert_types(df, combined_type_mapping)
     df = df.drop(columns=["player_name"])
+    
     return df

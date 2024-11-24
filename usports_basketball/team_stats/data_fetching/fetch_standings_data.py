@@ -121,14 +121,17 @@ async def fetch_team_record_data(soup: BeautifulSoup) -> list[dict[str, str]]:
             li: Tag
             for li in team_soup.find_all("li"):
                 category_div = li.find("div", class_=lambda c: c and "small text-uppercase" in c)
+
                 if category_div:
                     category = category_div.get_text(strip=True)
+                    
                     if category in category_mapping:
                         value_div = li.find("div", class_=["text-nowrap", "fw-bold"])
                         value = value_div.get_text(strip=True) if value_div else None
                         stats[category_mapping[category]] = value
 
             await page.close()
+
             return stats
 
         # Create tasks for each team to fetch data concurrently

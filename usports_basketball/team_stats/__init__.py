@@ -37,6 +37,7 @@ def __construct_urls(gender: str, season_option: str) -> tuple[str, str]:
 
     team_stats_url = f"{BASE_URL}/{sport}/{base_url}/teams"
     standings_url = f"{BASE_URL}/{sport}/{SEASON}/standings"
+    
     return team_stats_url, standings_url
 
 

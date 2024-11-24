@@ -14,6 +14,7 @@ async def get_team_stats_df(stats_url: str) -> pd.DataFrame:
     df = pd.DataFrame(team_stats)
 
     invalid_rows_count = df[df["games_played"] == "-"].shape[0]
+    
     if invalid_rows_count > 0:
         logger.debug(f"\nDropping {invalid_rows_count} rows with invalid 'games_played' values\n")
         df = df[df["games_played"] != "-"]
@@ -24,4 +25,5 @@ async def get_team_stats_df(stats_url: str) -> pd.DataFrame:
         combined_type_mapping.update(mapping)
 
     df = convert_types(df, combined_type_mapping)
+
     return df

@@ -21,4 +21,5 @@ def setup_logging():
         datefmt="%d/%m/%Y %H:%M:%S",
     )
     logger = logging.getLogger(__name__)
+    
     return logger
