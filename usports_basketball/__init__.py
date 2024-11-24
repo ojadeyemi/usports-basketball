@@ -12,20 +12,20 @@ Dependencies:
 
 Functions:
 - usport_players_stats: Fetch player statistics.
-- usport_teams_stats: Fetch team statistics.
+- usport_team_stats: Fetch team statistics.
 
 These functions return pandas DataFrames with the requested statistics.
 
 Examples:
->>> from usports_basketball import usport_players_stats, usport_teams_stats
+>>> from usports_basketball import usport_players_stats, usport_team_stats
 
 >>> men_player_stats_df = usport_players_stats('m') # men's players stats
 
 >>> women_player_stats_df = usport_players_stats('w', 'championship') # women's players in U Sports championship Final 8
 
->>> men_team_stats_df = usport_teams_stats('m')
+>>> men_team_stats_df = usport_team_stats('m')
 
->>> women_team_stats_df = usport_teams_stats('w', 'playoffs')
+>>> women_team_stats_df = usport_team_stats('w', 'playoffs')
 
 Author:
     OJ Adeyemi
@@ -35,6 +35,6 @@ Date Created:
 """
 
 from .player_stats import usport_players_stats
-from .team_stats import usport_teams_stats
+from .team_stats import usport_team_stats
 
-__all__ = ["usport_players_stats", "usport_teams_stats"]
+__all__ = ["usport_players_stats", "usport_team_stats"]

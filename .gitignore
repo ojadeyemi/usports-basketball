@@ -1,15 +1,15 @@
 .vscode/
 .idea/
-<<<<<<< HEAD
+
+# environment variables
 .env
-=======
-*env
->>>>>>> feat/playwright
+.env.local
 
 
 # Python files #
 __pycache__/
 .py*/
+*$py.class
 dist/
 build/
 
@@ -19,6 +19,21 @@ build/
 .pypirc
 
 #virtual environment
+*env/
 *venv/
 virtualenv/
 
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/
+cover/

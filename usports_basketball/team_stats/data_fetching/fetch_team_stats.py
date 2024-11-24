@@ -3,8 +3,9 @@ from typing import Any
 from bs4 import BeautifulSoup, Tag
 from playwright.async_api import async_playwright
 
-from ...utils import clean_text, fetch_table_html, get_random_header, split_made_attempted
-from ..team_settings import stat_group_options, team_stats_columns_type_mapping
+from usports_basketball.constants import TIMEOUT
+from usports_basketball.team_stats.team_settings import stat_group_options, team_stats_columns_type_mapping
+from usports_basketball.utils import clean_text, fetch_table_html, get_random_header, split_made_attempted
 
 
 def merge_team_data(existing_data: list[dict[str, Any]], new_data: list[dict[str, Any]]) -> list[dict[str, Any]]:
@@ -57,7 +58,7 @@ def parse_team_stats_table(soup: BeautifulSoup, columns: list[str]) -> list[dict
 async def fetching_team_stats(stats_url: str):
     """function for handling fetching team stats from url"""
     async with async_playwright() as p:
-        browser = await p.chromium.launch(headless=True, timeout=10000)
+        browser = await p.chromium.launch(headless=True, timeout=TIMEOUT)
         page = await browser.new_page()
 
         headers = get_random_header()
@@ -67,7 +68,7 @@ async def fetching_team_stats(stats_url: str):
         await page.route("**/*.{png,jpg,jpeg,gif,webp,css,woff2,woff,js}", lambda route: route.abort())
 
         try:
-            await page.goto(stats_url, timeout=60 * 1000)
+            await page.goto(stats_url, timeout=TIMEOUT)
             all_data = []
             team_table_names = stat_group_options.keys()
             for index, _ in enumerate(team_table_names):

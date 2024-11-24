@@ -6,12 +6,12 @@ build-backend = "setuptools.build_meta"
 name = "usports-basketball"
 version = "2.0.1"
 dependencies = [
-    "requests>=2.32",
     "beautifulsoup4>=4.12",
     "pandas>=2.2",
-    "playwright>=1.45",
+    "playwright>=1.49",
+    "requests>=2.32",
 ]
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 authors = [{ name = "OJ Adeyemi", email = "ojieadeyemi@gmail.com" }]
 description = "A Python package for current U Sports basketball stats."
 readme = "README.md"
@@ -22,14 +22,10 @@ keywords = [
     "statistics",
     "data analysis",
     "web scraping",
-    "python package",
-    "pandas",
-    "beautifulsoup",
     "playwright",
     "sports analytics",
     "college basketball",
     "developer tools",
-    "data fetching",
 ]
 
 classifiers = [
@@ -39,7 +35,6 @@ classifiers = [
     "Intended Audience :: Developers",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3 :: Only",
-    "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",

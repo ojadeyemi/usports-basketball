@@ -7,7 +7,7 @@ It utilizes web scraping techniques to extract data from the U Sports website
 and processes it into pandas DataFrames for further analysis.
 
 Function:
-- usport_teams_stats: Fetch and combine current team statistics and standings.
+- usport_team_stats: Fetch and combine current team statistics and standings.
 
 Author:
     OJ Adeyemi
@@ -17,33 +17,26 @@ Date Created:
 """
 
 import asyncio
-import logging
+from typing import Literal
 
 import pandas as pd
 from pandas import DataFrame
 
-from ..utils import get_sport_identifier, setup_logging
+from ..constants import BASE_URL, SEASON, SEASON_URLS
+from ..utils import get_sport_identifier, normalize_gender_arg, setup_logging, validate_season_option
 from .data_processing import get_standings_df, get_team_stats_df
 from .team_settings import team_conference
 
-SEASON_URLS = {"regular": "2023-24", "playoffs": "2023-24p", "championship": "2023-24c"}
-BASE_URL = "https://universitysport.prestosports.com/sports"
-
-setup_logging()
-logger = logging.getLogger(__name__)
+logger = setup_logging()
 
 
 def __construct_urls(gender: str, season_option: str) -> tuple[str, str]:
     """Construct URLs for fetching team stats and standings data based on gender and season option."""
     sport = get_sport_identifier(gender)
-    try:
-        base_url = SEASON_URLS[season_option]
-    except KeyError as e:
-        available_options = ", ".join(SEASON_URLS.keys())
-        raise ValueError(f"Invalid season option {season_option}. Available options: {available_options}") from e
+    base_url = validate_season_option(season_option, SEASON_URLS)
 
     team_stats_url = f"{BASE_URL}/{sport}/{base_url}/teams"
-    standings_url = f"{BASE_URL}/{sport}/2023-24/standings-conf"
+    standings_url = f"{BASE_URL}/{sport}/{SEASON}/standings"
     return team_stats_url, standings_url
 
 
@@ -53,8 +46,10 @@ async def __combine_data(gender: str, season_option: str) -> DataFrame:
         raise ValueError(f"Invalid season_option: {season_option}. Must be one of {', '.join(SEASON_URLS.keys())}")
 
     team_stats_url, standings_url = __construct_urls(gender, season_option)
+
     logger.debug(f"FETCHING {gender.upper()} {season_option.upper()} SEASON STANDINGS")
     standings_df = await get_standings_df(standings_url)
+
     logger.debug(f"FETCHING {gender.upper()} {season_option.upper()} SEASON STATISTICS\n")
     team_stats_df = await get_team_stats_df(team_stats_url)
 
@@ -70,7 +65,9 @@ async def __combine_data(gender: str, season_option: str) -> DataFrame:
     return combined_df
 
 
-def usport_teams_stats(arg: str, season_option: str = "regular") -> DataFrame:
+def usport_team_stats(
+    arg: Literal["m", "men", "w", "women"], season_option: Literal["regular", "playoffs", "championship"] = "regular"
+) -> DataFrame:
     """
     Retrieve and combine current U Sports Basketball team stats based on gender and season.
 
@@ -84,14 +81,8 @@ def usport_teams_stats(arg: str, season_option: str = "regular") -> DataFrame:
     Returns:
         DataFrame: DataFrame containing the combined team stats.
     """
-    # Normalize and map the input argument
-    arg = arg.lower()
-    if arg in ["m", "men"]:
-        gender = "men"
-    elif arg in ["w", "women"]:
-        gender = "women"
-    else:
-        raise ValueError("The argument 'arg' should be either 'men', 'm', 'w', or 'women'")
+    gender = normalize_gender_arg(arg)
+    season_option = season_option.lower()
 
     logger.info(f"FETCHING CURRENT {gender.upper()} {season_option.upper()} SEASON TEAM STATS\n")
 

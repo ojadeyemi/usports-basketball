@@ -1,15 +1,16 @@
-# 🏀 usports-basketball 
+# 🏀 usports-basketball
 
 [![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
-[![PyPI Latest Release](https://img.shields.io/pypi/v/usports-basketball?color=orange)](https://pypi.org/project/usports-basketball/) 
-[![License](https://img.shields.io/pypi/l/usports-basketball.svg)](https://github.com/ojadeyemi/usports-basketball/blob/main/LICENSE) 
-[![Downloads](https://static.pepy.tech/badge/usports-basketball)](https://pepy.tech/project/usports-basketball) 
+[![PyPI Latest Release](https://img.shields.io/pypi/v/usports-basketball?color=orange)](https://pypi.org/project/usports-basketball/)
+[![License](https://img.shields.io/pypi/l/usports-basketball.svg)](https://github.com/ojadeyemi/usports-basketball/blob/main/LICENSE)
+[![Downloads](https://static.pepy.tech/badge/usports-basketball)](https://pepy.tech/project/usports-basketball)
 [![Package Status](https://img.shields.io/pypi/status/usports-basketball.svg)](https://pypi.org/project/usports-basketball/)
 
-**usports-basketball** is a Python package that fetches and analyzes current basketball stats from the [U Sports website](https://usports.ca/en). 
+**usports-basketball** is a Python package that fetches and analyzes current basketball stats from the [U Sports website](https://usports.ca/en).
 
-With two simple functions you can easily retrieve detailed data for either the men's or women's league. 
-- `usport_teams_stats`: Fetch team stats.
+With two simple functions you can easily retrieve detailed data for either the men's or women's league.
+
+- `usport_team_stats`: Fetch team stats.
 - `usport_players_stats`: Fetch player stats.
 
 Each function returns a pandas DataFrame with the relevant statistics, allowing users to gather data for analysis and insights.
@@ -42,7 +43,7 @@ playwright install chromium
 
 ## Functions
 
-### `usport_teams_stats`
+### `usport_team_stats`
 
 This function fetches and processes team statistics data, including standings, win-loss totals, shooting percentages, and other relevant team metrics for the current U Sports basketball season.
 
@@ -79,16 +80,16 @@ This function fetches and processes player statistics data, including total game
 - ### Fetching current stats from the league
 
 ```python
-from usports_basketball import usport_teams_stats, usports_player_stats
+from usports_basketball import usport_team_stats, usports_player_stats
 
 # Fetching and processing men's team statistics
-men_team_stats_df = usport_teams_stats('m')
+men_team_stats_df = usport_team_stats('m')
 
 # Fetching and processing men's player statistics
 men_player_stats_df = usport_players_stats('m')
 
 # Fetch statistics for women's playoff teams
-women_team_stats_df = usport_teams_stats('w', 'playoffs')
+women_team_stats_df = usport_team_stats('w', 'playoffs')
 
 # Fetch statistics for women's players playing in U Sports championship Final 8
 women_player_stats_df = usport_players_stats('w', 'championship')
@@ -106,7 +107,6 @@ print(men_player_stats_df.columns.tolist())
 print("\nColumn names in men's player statistics DataFrame:")
 print(men_player_stats_df.columns.tolist())
 ```
-
 
 - ### Exporting DataFrame to different files
 

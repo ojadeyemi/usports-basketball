@@ -18,7 +18,15 @@ Modules:
 """
 
 from .headers import get_random_header
-from .helpers import clean_text, convert_types, fetch_table_html, split_made_attempted, get_sport_identifier
+from .helpers import (
+    clean_text,
+    convert_types,
+    fetch_table_html,
+    get_sport_identifier,
+    normalize_gender_arg,
+    split_made_attempted,
+    validate_season_option,
+)
 from .logging_config import setup_logging
 
 __all__ = [
@@ -28,5 +36,7 @@ __all__ = [
     "get_random_header",
     "setup_logging",
     "split_made_attempted",
-    "get_sport_identifier"
+    "get_sport_identifier",
+    "normalize_gender_arg",
+    "validate_season_option",
 ]

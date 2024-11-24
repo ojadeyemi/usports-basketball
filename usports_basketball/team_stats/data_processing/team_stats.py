@@ -1,13 +1,10 @@
-import logging
-
 import pandas as pd
 
-from ...utils import convert_types, setup_logging
-from ..data_fetching import fetching_team_stats
-from ..team_settings import team_stats_columns_type_mapping
+from usports_basketball.team_stats.data_fetching import fetching_team_stats
+from usports_basketball.team_stats.team_settings import team_stats_columns_type_mapping
+from usports_basketball.utils import convert_types, setup_logging
 
-setup_logging()
-logger = logging.getLogger(__name__)
+logger = setup_logging()
 
 
 async def get_team_stats_df(stats_url: str) -> pd.DataFrame:

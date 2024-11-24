@@ -1,5 +1,6 @@
 import re
 import unicodedata
+from typing import Literal
 
 from pandas import DataFrame
 from playwright.async_api import Page
@@ -55,3 +56,23 @@ def get_sport_identifier(gender: str) -> str:
     if gender == "women":
         return "wbkb"
     raise ValueError("Argument must be 'men' or 'women'")
+
+
+def normalize_gender_arg(arg: Literal["m", "men", "w", "women"]) -> str:
+    """Normalize the 'arg' input to 'men' or 'women'."""
+    arg_lower = arg.lower()
+    if arg_lower in ["m", "men"]:
+        return "men"
+    elif arg_lower in ["w", "women"]:
+        return "women"
+    else:
+        raise ValueError("The argument 'arg' should be either 'men', 'm', 'w', or 'women'")
+
+
+def validate_season_option(season_option: str, available_options: dict) -> str:
+    """Validate the season option and return the corresponding URL fragment."""
+    season_option_lower = season_option.lower()
+    if season_option_lower not in available_options:
+        options = ", ".join(available_options.keys())
+        raise ValueError(f"Invalid season_option: {season_option}. Must be one of {options}")
+    return available_options[season_option_lower]

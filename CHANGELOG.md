@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 ## v2.0.1
 
 ### Added
+
 - Added **streak**, **home**, and **away** stats to `team_stats`.
 
 ### Changed
@@ -23,4 +24,4 @@ All notable changes to this project will be documented in this file.
 ### Changed
 
 - Improved data fetching mechanism using Playwright.
-- Updated implementation of `usport_players_stats` and `usport_teams_stats` functions to handle season_options
+- Updated implementation of `usport_players_stats` and `usport_team_stats` functions to handle season_options

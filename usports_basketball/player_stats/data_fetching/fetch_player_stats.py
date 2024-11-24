@@ -4,8 +4,9 @@ from typing import Any
 from bs4 import BeautifulSoup, Tag
 from playwright.async_api import Page, async_playwright
 
-from ...utils import clean_text, fetch_table_html, get_random_header, split_made_attempted
-from ..player_settings import player_stats_columns_type_mapping
+from usports_basketball.constants import TIMEOUT
+from usports_basketball.player_stats.player_settings import player_stats_columns_type_mapping
+from usports_basketball.utils import clean_text, fetch_table_html, get_random_header, split_made_attempted
 
 
 def parse_player_stats_table(soup: BeautifulSoup, columns: list[str]) -> list[dict[str, Any]]:
@@ -68,7 +69,7 @@ async def fetch_table_data(page: Page, index: int, columns: dict[str, type]):
 async def fetching_player_stats(url: str):
     """Function for handling fetching data from players stat url"""
     async with async_playwright() as p:
-        browser = await p.chromium.launch(headless=True, timeout=10000)
+        browser = await p.chromium.launch(headless=True, timeout=TIMEOUT)
         page = await browser.new_page()
         headers = get_random_header()
         await page.set_extra_http_headers(headers)
@@ -77,7 +78,7 @@ async def fetching_player_stats(url: str):
         await page.route("**/*.{png,jpg,jpeg,gif,webp,css,woff2,woff,js}", lambda route: route.abort())
 
         try:
-            await page.goto(url, timeout=50000)
+            await page.goto(url, timeout=TIMEOUT)
             tasks = [fetch_table_data(page, index + 3, player_stats_columns_type_mapping[index]) for index in range(3)]
 
             results = await asyncio.gather(*tasks)

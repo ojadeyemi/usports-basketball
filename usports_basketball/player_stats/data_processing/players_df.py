@@ -1,8 +1,8 @@
 import pandas as pd
 
-from ...utils import convert_types
-from ..data_fetching import fetching_player_stats
-from ..player_settings import player_stats_columns_type_mapping
+from usports_basketball.player_stats.data_fetching import fetching_player_stats
+from usports_basketball.player_stats.player_settings import player_stats_columns_type_mapping
+from usports_basketball.utils import convert_types
 
 
 async def get_players_stats_df(stats_url: str) -> pd.DataFrame:

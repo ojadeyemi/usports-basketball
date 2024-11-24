@@ -4,8 +4,10 @@ from typing import Any
 from bs4 import BeautifulSoup, Tag
 from playwright.async_api import async_playwright
 
-from ...utils import clean_text, get_random_header
-from ..team_settings import standings_type_mapping
+from usports_basketball.constants import TIMEOUT
+from usports_basketball.team_stats.team_settings import standings_type_mapping
+from usports_basketball.utils import clean_text, get_random_header
+
 from .fetch_team_stats import merge_team_data
 
 
@@ -41,7 +43,7 @@ def parse_standings_table(soup: BeautifulSoup, columns: list[str]) -> list[dict[
 async def fetching_standings_data(standings_url: str) -> list[dict[str, Any]]:
     """function for handling fetch standings data from standings url"""
     async with async_playwright() as p:
-        browser = await p.chromium.launch(headless=True, timeout=10000)
+        browser = await p.chromium.launch(headless=True, timeout=TIMEOUT)
         page = await browser.new_page()
 
         headers = get_random_header()
@@ -52,9 +54,9 @@ async def fetching_standings_data(standings_url: str) -> list[dict[str, Any]]:
             lambda route: route.abort(),
         )
 
-        await page.goto(standings_url, timeout=10000)
+        await page.goto(standings_url, timeout=TIMEOUT)
 
-        await page.wait_for_selector("tbody", timeout=10000)
+        await page.wait_for_selector("tbody", timeout=TIMEOUT)
         tables = await page.query_selector_all("tbody")
 
         tables_length = len(tables)
@@ -83,7 +85,7 @@ async def fetching_standings_data(standings_url: str) -> list[dict[str, Any]]:
 async def fetch_team_record_data(soup: BeautifulSoup) -> list[dict[str, str]]:
     """Fetch data for all teams based on the provided soup."""
     async with async_playwright() as p:
-        browser = await p.chromium.launch(headless=True, timeout=5000)
+        browser = await p.chromium.launch(headless=True, timeout=TIMEOUT)
 
         # Extract all team <a> tags from the standings page
         team_name_tags = soup.find_all("a", href=True)
@@ -101,7 +103,7 @@ async def fetch_team_record_data(soup: BeautifulSoup) -> list[dict[str, str]]:
             team_name = clean_text(team_name_tag.get_text(strip=True))
             team_url = f"https://universitysport.prestosports.com{href}"
 
-            await page.goto(team_url, wait_until="networkidle")
+            await page.goto(team_url, wait_until="load", timeout=TIMEOUT)
 
             # Extract the <ul> tag with the class name 'team-stats'
             ul_content = await page.locator("ul.team-stats").inner_html()
@@ -122,7 +124,7 @@ async def fetch_team_record_data(soup: BeautifulSoup) -> list[dict[str, str]]:
                 if category_div:
                     category = category_div.get_text(strip=True)
                     if category in category_mapping:
-                        value_div = li.find("div", class_="fs-4 lh-1 text-nowrap fw-bold")
+                        value_div = li.find("div", class_=["text-nowrap", "fw-bold"])
                         value = value_div.get_text(strip=True) if value_div else None
                         stats[category_mapping[category]] = value
 
