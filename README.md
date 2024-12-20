@@ -59,7 +59,7 @@ This function fetches and processes team statistics data, including standings, w
 
 - `DataFrame`: A pandas DataFrame containing the team statistics data.
 
-### `usports_player_stats`
+### `usport_player_stats`
 
 This function fetches and processes player statistics data, including total games played, points scored, shooting percentages, rebounds, assists, turnovers, steals, blocks, and other individual player metrics for the current U Sports basketball season.
 
@@ -80,12 +80,12 @@ This function fetches and processes player statistics data, including total game
 - ### Fetching current stats from the league
 
 ```python
-from usports_basketball import usport_team_stats, usports_player_stats
+from usports_basketball import usport_team_stats, usport_player_stats
 
-# Fetching and processing men's team statistics
+# Fetching men's team statistics
 men_team_stats_df = usport_team_stats('m')
 
-# Fetching and processing men's player statistics
+# Fetching men's player statistics
 men_player_stats_df = usport_players_stats('m')
 
 # Fetch statistics for women's playoff teams

@@ -44,9 +44,7 @@ expected_reg_season_column_names = [
     "blocks_per_game_against",
     "team_fouls_per_game_against",
     "points_per_game_against",
-    "conference",
-    "streak",
-    # "last_ten_games",
+    "conference"
 ]
 
 expected_players_df_columns = [
