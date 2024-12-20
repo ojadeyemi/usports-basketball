@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
+## v2.0.3
+
+### Removed
+
+- **Team record data**: url doesn't work so I can't get `streak`, `home` and `away` team data
+
+### Changed
+
+- Increased rate limiting time
+
 ## v2.0.2
 
 ### Changed

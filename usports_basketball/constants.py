@@ -10,4 +10,4 @@ SEASON_URLS = {"regular": SEASON, "playoffs": f"{SEASON}p", "championship": f"{S
 BASE_URL = "https://universitysport.prestosports.com/sports"
 
 # Timeout value (in milliseconds) for all Playwright operations
-TIMEOUT = 50000  # 50 seconds
+TIMEOUT = 60000  # 60 seconds

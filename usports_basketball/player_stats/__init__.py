@@ -43,7 +43,7 @@ def __construct_player_urls(gender: str, season_option: str) -> list[str]:
 
 
 async def __fetch_with_delay(url: str) -> DataFrame:
-    await asyncio.sleep(random.uniform(0.5, 2.0))
+    await asyncio.sleep(random.uniform(1.0, 3.0))
     logger.debug(f"Fetching stats on category: {url[-5:]}")
     players_df = await get_players_stats_df(url)
 

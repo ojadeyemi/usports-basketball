@@ -40,7 +40,7 @@ def parse_standings_table(soup: BeautifulSoup, columns: list[str]) -> list[dict[
     return table_data
 
 
-async def fetching_standings_data(standings_url: str) -> list[dict[str, Any]]:
+async def fetching_standings_data(standings_url: str) -> dict[str, Any]:
     """function for handling fetch standings data from standings url"""
     async with async_playwright() as p:
         browser = await p.chromium.launch(headless=True, timeout=TIMEOUT)
@@ -62,7 +62,7 @@ async def fetching_standings_data(standings_url: str) -> list[dict[str, Any]]:
         tables_length = len(tables)
 
         all_standings = []
-        all_team_records = []
+        # all_team_records = []
         for i in range(0, tables_length):
             table = await tables[i].inner_html()
 
@@ -72,14 +72,14 @@ async def fetching_standings_data(standings_url: str) -> list[dict[str, Any]]:
 
             column_names = list(standings_type_mapping.keys())[1:]
             standings_data = parse_standings_table(soup, column_names)
-            team_record_data = await fetch_team_record_data(soup)
+            # team_record_data = await fetch_team_record_data(soup)
 
             all_standings = merge_team_data(all_standings, standings_data)
-            all_team_records = merge_team_data(all_team_records, team_record_data)
+        # all_team_records = merge_team_data(all_team_records, team_record_data)
 
         await browser.close()
 
-        return all_standings, all_team_records
+        return all_standings
 
 
 async def fetch_team_record_data(soup: BeautifulSoup) -> list[dict[str, str]]:
@@ -124,7 +124,7 @@ async def fetch_team_record_data(soup: BeautifulSoup) -> list[dict[str, str]]:
 
                 if category_div:
                     category = category_div.get_text(strip=True)
-                    
+
                     if category in category_mapping:
                         value_div = li.find("div", class_=["text-nowrap", "fw-bold"])
                         value = value_div.get_text(strip=True) if value_div else None
